@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Digital.MainPage"
+    Title="Digital"
+    BackgroundColor="#FFD1DC">
+
+    <VerticalStackLayout 
+        Padding="24"
+        Spacing="16"
+        HorizontalOptions="Center"
+        VerticalOptions="Center">
+
+        <Label 
+            Text="Bienvenido a ShopFlow 🛒 "
+            FontSize="24" 
+            HorizontalOptions="Center" 
+            HorizontalTextAlignment="Center"
+            Margin="0,0,0,16" />
+
+        <Button 
+            Text="1. Registrar productos" 
+            FontSize="18"
+            Clicked="OnRegistrarProductosClicked" />
+
+        <Button 
+            Text="2. Controlar inventario" 
+            FontSize="18"
+            Clicked="OnControlarInventarioClicked" />
+
+        <Button 
+            Text="3. Crear pedidos personalizados" 
+            FontSize="18"
+            Clicked="OnCrearPedidosClicked" />
+
+        <Button 
+            Text="4. Actualizar estado del pedido" 
+            FontSize="18"
+            Clicked="OnActualizarEstadoPedidoClicked" />
+
+        <Button 
+            Text="5. Recibir alertas de bajo stock" 
+            FontSize="18"
+            Clicked="OnRecibirAlertasBajoStockClicked" />
+
+        <Button 
+            Text="6. Generar reportes de ventas y ganancias" 
+            FontSize="18"
+            Clicked="OnGenerarReportesClicked" />
+    </VerticalStackLayout>
+</ContentPage>

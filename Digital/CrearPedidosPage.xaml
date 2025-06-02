@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Digital.CrearPedidosPage"
+    Title="Crear Pedido Personalizado"
+    BackgroundColor="White">
+
+    
+    <Grid RowDefinitions="Auto, *" RowSpacing="0" ColumnSpacing="0">
+
+        
+        <Grid
+            Grid.Row="0"
+            BackgroundColor="#FFD1DC"
+            Padding="16"
+            ColumnDefinitions="*,Auto">
+
+            
+            <Label
+                Text="Crear Pedido Personalizado"
+                FontSize="28"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                Grid.Column="0"
+                TextColor="Black" />
+
+            
+            <Button
+                Text="Regresar al inicio"
+                BackgroundColor="White"
+                TextColor="Black"
+                CornerRadius="8"
+                Grid.Column="1"
+                VerticalOptions="Center"
+                Clicked="OnRegresarInicioClicked" />
+        </Grid>
+
+       
+        <ScrollView
+            Grid.Row="1"
+            VerticalScrollBarVisibility="Always"
+            VerticalOptions="FillAndExpand">
+
+            <VerticalStackLayout Padding="24" Spacing="20">
+
+                
+                <Label
+                    Text="Seleccionar artículo:"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    TextColor="Black" />
+                <Picker
+                    x:Name="PickerProductos"
+                    Title="-- Elija un producto --"
+                    BackgroundColor="White"
+                    TextColor="Black"
+                    SelectedIndexChanged="OnPickerSelectionChanged" />
+
+                <!-- 2) Precio unitario -->
+                <Label
+                    Text="Precio unitario:"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    TextColor="Black" />
+                <Entry
+                    x:Name="EntryPrecioUnitario"
+                    IsReadOnly="True"
+                    BackgroundColor="#F0F0F0"
+                    TextColor="Black"
+                    Placeholder="$0.00" />
+
+                <!-- 3) Cantidad -->
+                <Label
+                    Text="Cantidad:"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    TextColor="Black" />
+                <Label
+                    x:Name="LabelStockInfo"
+                    Text="Máximo: 0 en stock"
+                    FontSize="14"
+                    TextColor="Gray" />
+                <HorizontalStackLayout Spacing="12">
+                    <Label
+                        x:Name="LabelCantidad"
+                        Text="0"
+                        FontSize="18"
+                        TextColor="Black" />
+                    <Stepper
+                        x:Name="StepperCantidad"
+                        Minimum="1"
+                        Maximum="1"
+                        Increment="1"
+                        ValueChanged="OnStepperValueChanged" />
+                </HorizontalStackLayout>
+
+                <!-- 4) Total línea -->
+                <Label
+                    Text="Total línea:"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    TextColor="Black" />
+                <Entry
+                    x:Name="EntryTotalLinea"
+                    IsReadOnly="True"
+                    BackgroundColor="#F0F0F0"
+                    TextColor="Black"
+                    Placeholder="$0.00" />
+
+                <!-- 5) Resumen de línea -->
+                <Label
+                    Text="Resumen de línea:"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    TextColor="Black" />
+                <Grid
+                    Padding="12"
+                    BackgroundColor="#F9F9F9"
+                    RowSpacing="4"
+                    ColumnSpacing="8">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Encabezados -->
+                    <Label
+                        Text="Artículo"
+                        FontAttributes="Bold"
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        TextColor="Black" />
+                    <Label
+                        Text="Cantidad"
+                        FontAttributes="Bold"
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        HorizontalTextAlignment="Center"
+                        TextColor="Black" />
+                    <Label
+                        Text="Total"
+                        FontAttributes="Bold"
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        HorizontalTextAlignment="End"
+                        TextColor="Black" />
+
+                    <!-- Valores dinámicos de la línea -->
+                    <Label
+                        x:Name="LabelResumenArticulo"
+                        Text="(sin selección)"
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        TextColor="Black" />
+                    <Label
+                        x:Name="LabelResumenCantidad"
+                        Text="0"
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        HorizontalTextAlignment="Center"
+                        TextColor="Black" />
+                    <Label
+                        x:Name="LabelResumenTotal"
+                        Text="$0.00"
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        HorizontalTextAlignment="End"
+                        TextColor="Black" />
+                </Grid>
+
+                <!-- 6) Botón “Agregar al carrito” -->
+                <Button
+                    x:Name="ButtonAgregarCarrito"
+                    Text="Agregar al carrito"
+                    BackgroundColor="White"
+                    TextColor="Black"
+                    CornerRadius="8"
+                    FontAttributes="Bold"
+                    HeightRequest="50"
+                    Clicked="OnAgregarCarritoClicked" />
+
+                <!-- 7) Carrito de líneas -->
+                <Label
+                    Text="Carrito"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    TextColor="Black"
+                    Margin="0,24,0,8" />
+                <CollectionView
+                    x:Name="CartCollection"
+                    ItemsSource="{Binding CartItems}"
+                    SelectionMode="None"
+                    VerticalScrollBarVisibility="Always">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="2*,1*,1*" Padding="12,8">
+                                <Label
+                                    Text="{Binding ProductoNombre}"
+                                    Grid.Column="0"
+                                    TextColor="Black" />
+                                <Label
+                                    Text="{Binding Cantidad}"
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="Center"
+                                    TextColor="Black" />
+                                <Label
+                                    Text="{Binding Subtotal, StringFormat='${0:F2}'}"
+                                    Grid.Column="2"
+                                    HorizontalTextAlignment="End"
+                                    TextColor="Black" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- 8) Total general del carrito -->
+                <Label
+                    Text="Total general:"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    TextColor="Black"
+                    Margin="0,24,0,0" />
+                <Entry
+                    x:Name="EntryCarritoTotal"
+                    IsReadOnly="True"
+                    BackgroundColor="#F0F0F0"
+                    TextColor="Black"
+                    Placeholder="$0.00" />
+
+                <!-- 9) Botón “Enviar el pedido” -->
+                <Button
+                    x:Name="ButtonEnviarPedido"
+                    Text="Enviar el pedido"
+                    BackgroundColor="White"
+                    TextColor="Black"
+                    CornerRadius="8"
+                    FontAttributes="Bold"
+                    HeightRequest="50"
+                    Margin="0,16,0,0"
+                    Clicked="OnEnviarPedidoClicked" />
+
+                <!-- 10) Listado de pedidos personalizados -->
+                <Label
+                    Text="Pedidos personalizados realizados:"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    TextColor="Black"
+                    Margin="0,32,0,8" />
+                <CollectionView
+                    x:Name="PedidosPersonalizadosCollection"
+                    ItemsSource="{Binding CompletedOrders}"
+                    SelectionMode="None"
+                    VerticalScrollBarVisibility="Always">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border
+                                Margin="0,4"
+                                StrokeShape="RoundRectangle 8"
+                                StrokeThickness="0"
+                                BackgroundColor="#FFFFFF"
+                                Padding="12">
+                                <Grid ColumnDefinitions="2*,1*,1*,Auto" VerticalOptions="Center">
+                                    <Label
+                                        Text="{Binding ProductoNombre}"
+                                        Grid.Column="0"
+                                        FontSize="16"
+                                        TextColor="Black" />
+                                    <Label
+                                        Text="{Binding Cantidad}"
+                                        Grid.Column="1"
+                                        HorizontalTextAlignment="Center"
+                                        TextColor="Black" />
+                                    <Label
+                                        Text="{Binding TotalLinea, StringFormat='${0:F2}'}"
+                                        Grid.Column="2"
+                                        HorizontalTextAlignment="End"
+                                        TextColor="Black" />
+                                    <Button
+                                        Grid.Column="3"
+                                        Text="✎"
+                                        FontSize="18"
+                                        BackgroundColor="Transparent"
+                                        TextColor="Blue"
+                                        CommandParameter="{Binding .}"
+                                        Clicked="OnEditarPedidoPersonalizadoClicked"
+                                        WidthRequest="40"
+                                        HeightRequest="40" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+</ContentPage>

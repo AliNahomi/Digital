@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Digital.RegistrarProductosPage"
+    Title="Registrar Productos"
+    BackgroundColor="White">
+
+    <StackLayout Spacing="0">
+
+        <!-- Encabezado rosado con botón para regresar -->
+        <Grid BackgroundColor="#FFD1DC" Padding="16"
+              ColumnDefinitions="*,Auto">
+            <Label 
+                Text="Registrar Productos" 
+                FontSize="28" 
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                Grid.Column="0"
+                TextColor="Black" />
+
+            <Button
+                Text="Regresar al inicio"
+                BackgroundColor="White"
+                TextColor="Black"
+                CornerRadius="8"
+                Grid.Column="1"
+                VerticalOptions="Center"
+                Clicked="OnRegresarInicioClicked" />
+        </Grid>
+
+        <!-- Contenido con ScrollView -->
+        <ScrollView VerticalScrollBarVisibility="Always">
+            <VerticalStackLayout Padding="24" Spacing="20">
+
+                <!-- Botón “Agregar Producto” -->
+                <Button
+                    x:Name="ButtonAgregar"
+                    Text="Agregar Producto"
+                    BackgroundColor="White"
+                    TextColor="Black"
+                    CornerRadius="8"
+                    FontAttributes="Bold"
+                    Clicked="OnAgregarProductoClicked" />
+
+                <!-- Formulario (oculto al inicio) -->
+                <Border
+                    x:Name="FormularioBorder"
+                    IsVisible="False"
+                    StrokeShape="RoundRectangle 8"
+                    StrokeThickness="0"
+                    BackgroundColor="#F9F9F9"
+                    Padding="16"
+                    Margin="0,8">
+                    <VerticalStackLayout Spacing="12">
+
+                        <Entry 
+                            x:Name="EntryNombre"
+                            Placeholder="Nombre del producto"
+                            BackgroundColor="White"
+                            TextColor="Black"
+                            HeightRequest="40" />
+
+                        <Editor 
+                            x:Name="EntryDescripcion"
+                            Placeholder="Descripción"
+                            BackgroundColor="White"
+                            TextColor="Black"
+                            AutoSize="TextChanges" />
+
+                        <Entry 
+                            x:Name="EntryPrecio"
+                            Placeholder="Precio"
+                            Keyboard="Numeric"
+                            BackgroundColor="White"
+                            TextColor="Black"
+                            HeightRequest="40" />
+
+                        <Entry
+                            x:Name="EntryCantidad"
+                            Placeholder="Cantidad"
+                            Keyboard="Numeric"
+                            BackgroundColor="White"
+                            TextColor="Black"
+                            HeightRequest="40" />
+
+                        <HorizontalStackLayout Spacing="16" HorizontalOptions="Center">
+                            <Button
+                                x:Name="ButtonGuardar"
+                                Text="Guardar"
+                                BackgroundColor="White"
+                                TextColor="Black"
+                                CornerRadius="8"
+                                WidthRequest="120"
+                                Clicked="OnGuardarClicked" />
+
+                            <Button
+                                x:Name="ButtonCancelar"
+                                Text="Cancelar"
+                                BackgroundColor="White"
+                                TextColor="Black"
+                                CornerRadius="8"
+                                WidthRequest="120"
+                                Clicked="OnCancelarClicked" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Título “Productos existentes:” -->
+                <Label 
+                    Text="Productos existentes:" 
+                    FontSize="20" 
+                    TextColor="Black" />
+
+                <!-- Lista de todos los registros SIN fusionar -->
+                <CollectionView
+                    x:Name="ProductsCollection"
+                    ItemsSource="{Binding Productos}"
+                    SelectionMode="None"
+                    HeightRequest="400">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border
+                                Margin="0,4"
+                                StrokeShape="RoundRectangle 8"
+                                StrokeThickness="0"
+                                BackgroundColor="#FFFFFF"
+                                Padding="12">
+                                <Grid ColumnDefinitions="*,Auto,Auto" VerticalOptions="Center">
+                                    <StackLayout Orientation="Vertical" Grid.Column="0">
+                                        <Label 
+                                            Text="{Binding Nombre}" 
+                                            FontSize="18" 
+                                            TextColor="Black" />
+                                        <Label 
+                                            Text="{Binding Precio, StringFormat='Precio: {0:C}'}"
+                                            FontSize="14"
+                                            TextColor="Gray" />
+                                        <Label
+                                            Text="{Binding Cantidad, StringFormat='Cantidad: {0}'}"
+                                            FontSize="14"
+                                            TextColor="Gray" />
+                                    </StackLayout>
+
+                                    <Button
+                                        Grid.Column="1"
+                                        Text="✎"
+                                        FontSize="18"
+                                        BackgroundColor="Transparent"
+                                        TextColor="Blue"
+                                        Clicked="OnEditarProductoClicked"
+                                        CommandParameter="{Binding .}"
+                                        WidthRequest="40"
+                                        HeightRequest="40" />
+
+                                    <Button
+                                        Grid.Column="2"
+                                        Text="🗑"
+                                        FontSize="18"
+                                        BackgroundColor="Transparent"
+                                        TextColor="Red"
+                                        Clicked="OnEliminarProductoClicked"
+                                        CommandParameter="{Binding .}"
+                                        WidthRequest="40"
+                                        HeightRequest="40" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </StackLayout>
+</ContentPage>
+
