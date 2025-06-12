@@ -289,7 +289,7 @@
                                         BackgroundColor="Transparent"
                                         TextColor="Blue"
                                         CommandParameter="{Binding .}"
-                                        Clicked="OnEditarPedidoPersonalizadoClicked"
+                                        
                                         WidthRequest="40"
                                         HeightRequest="40" />
                                 </Grid>
