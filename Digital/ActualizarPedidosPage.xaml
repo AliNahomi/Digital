@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Digital.ActualizarPedidosPage"
+    Title="Actualizar Pedido"
+    BackgroundColor="White">
+
+    <!-- ScrollView añadido aquí -->
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <!-- Encabezado -->
+            <Label 
+                Text="ACTUALIZAR PEDIDO" 
+                FontAttributes="Bold"
+                FontSize="24"
+                HorizontalOptions="Center"
+                TextColor="Black"
+                BackgroundColor="#FFD1DC"
+                Padding="8" />
+
+            <!-- Selector de pedido -->
+            <Picker 
+                x:Name="PickerPedidos"
+                Title="Seleccione un pedido"
+                SelectedIndexChanged="OnPedidoSeleccionado"
+                BackgroundColor="White"
+                TextColor="Black" />
+
+            <!-- Datos del pedido seleccionado -->
+            <Label x:Name="LabelInfoPedido" Text="Información del pedido..." TextColor="Black" />
+
+            <!-- Estado del pedido -->
+            <Label Text="Estado actual:" FontAttributes="Bold" TextColor="Black" />
+            <Picker x:Name="PickerEstado" Title="Nuevo estado">
+                <Picker.Items>
+                    <x:String>En preparación</x:String>
+                    <x:String>En Camino</x:String>
+                    <x:String>Entregado</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <!-- Observaciones -->
+            <Label Text="Observaciones:" FontAttributes="Bold" TextColor="Black" />
+            <Editor x:Name="EditorObservaciones" AutoSize="TextChanges" HeightRequest="80" />
+
+            <!-- Botón actualizar -->
+            <Button 
+                x:Name="ButtonGuardar"
+                Text="Guardar cambios"
+                BackgroundColor="#FFD1DC"
+                TextColor="Black"
+                Clicked="OnGuardarCambiosClicked" />
+
+            <!-- Historial de pedidos -->
+            <Label
+                Text="Pedidos registrados:"
+                FontSize="18"
+                FontAttributes="Bold"
+                TextColor="Black"
+                Margin="0,24,0,8" />
+
+            <!-- Importante: Fijamos altura al CollectionView para evitar conflicto con ScrollView -->
+            <CollectionView
+                x:Name="HistorialPedidosCollection"
+                HeightRequest="300"
+                ItemsSource="{Binding Pedidos}"
+                SelectionMode="None"
+                VerticalScrollBarVisibility="Always">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border
+                            Margin="0,4"
+                            StrokeShape="RoundRectangle 8"
+                            StrokeThickness="0"
+                            BackgroundColor="#FFFFFF"
+                            Padding="12">
+                            <Grid ColumnDefinitions="2*,1*,1*,Auto" VerticalOptions="Center">
+                                <Label
+                                    Text="{Binding ProductoNombre}"
+                                    Grid.Column="0"
+                                    FontSize="16"
+                                    TextColor="Black" />
+                                <Label
+                                    Text="{Binding Cantidad}"
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="Center"
+                                    TextColor="Black" />
+                                <Label
+                                    Text="{Binding TotalLinea, StringFormat='${0:F2}'}"
+                                    Grid.Column="2"
+                                    HorizontalTextAlignment="End"
+                                    TextColor="Black" />
+                                <Label
+                                    Text="{Binding Estado}"
+                                    Grid.Column="3"
+                                    HorizontalTextAlignment="End"
+                                    FontSize="14"
+                                    TextColor="Gray" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

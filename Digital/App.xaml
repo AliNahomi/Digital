@@ -2,8 +2,15 @@
 <Application
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:Digital"
     x:Class="Digital.App">
+   
+
     <Application.Resources>
         <!-- Recursos globales (estilos, colores, etc.) -->
+        <ResourceDictionary>
+            <local:StockColorConverter x:Key="StockColorConverter" />
+        </ResourceDictionary>
     </Application.Resources>
+
 </Application>

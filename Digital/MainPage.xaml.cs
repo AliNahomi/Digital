@@ -26,17 +26,18 @@ namespace Digital
 
         private async void OnActualizarEstadoPedidoClicked(object sender, EventArgs e)
         {
-            await DisplayAlert("Menú", "Presionaste: Actualizar estado del pedido", "OK");
+            await Navigation.PushAsync(new ActualizarPedidosPage());
         }
 
         private async void OnRecibirAlertasBajoStockClicked(object sender, EventArgs e)
         {
-            await DisplayAlert("Menú", "Presionaste: Recibir alertas de bajo stock", "OK");
+            await Navigation.PushAsync(new AlertasStockPage());
         }
 
         private async void OnGenerarReportesClicked(object sender, EventArgs e)
         {
-            await DisplayAlert("Menú", "Presionaste: Generar reportes de ventas y ganancias", "OK");
+            await Navigation.PushAsync(new ReporteVentasPage());
         }
+
     }
 }

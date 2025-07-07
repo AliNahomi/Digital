@@ -40,7 +40,7 @@
             Clicked="OnActualizarEstadoPedidoClicked" />
 
         <Button 
-            Text="5. Recibir alertas de bajo stock" 
+            Text="🔔 Recibir alertas de bajo stock" 
             FontSize="18"
             Clicked="OnRecibirAlertasBajoStockClicked" />
 

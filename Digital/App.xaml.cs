@@ -1,5 +1,4 @@
-﻿// App.xaml.cs
-using Microsoft.Maui;
+﻿using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Hosting;
 using System.Collections.ObjectModel;
@@ -8,21 +7,23 @@ namespace Digital
 {
     public partial class App : Application
     {
-        // Colección global donde se guardan TODOS los registros que provienen
-        // de la página "Registrar Productos". Cada registro es un Product con 
-        // Nombre, Descripción, Precio y Cantidad (stock individual).
-        public static ObservableCollection<Product> SharedProductos { get; }
-            = new ObservableCollection<Product>();
+        // Productos registrados desde la página de inventario
+        public static ObservableCollection<Product> SharedProductos { get; } = new();
+
+        // Pedidos guardados desde la página CrearPedidosPage
+        public static ObservableCollection<Order> SharedPedidos { get; set; } = new();
+        public static ObservableCollection<Product> ProductosBajoStock =>
+        new ObservableCollection<Product>(
+        SharedProductos.Where(p => p.Cantidad < 10).ToList());
+
 
         public App()
         {
             InitializeComponent();
-        }
 
-        // Sobrescribimos CreateWindow para iniciar navigation stack
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            return new Window(new NavigationPage(new MainPage()));
+            // Inicia la app con navegación
+            MainPage = new NavigationPage(new MainPage());
         }
     }
 }
+

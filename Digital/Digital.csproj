@@ -71,6 +71,12 @@
 	  <Compile Update="CrearPedidosPage.xaml.cs">
 	    <DependentUpon>CrearPedidosPage.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="ActualizarPedidosPage.xaml.cs">
+	    <DependentUpon>ActualizarPedidosPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="AlertasStockPage.xaml.cs">
+	    <DependentUpon>AlertasStockPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="RegistrarProductosPage.xaml.cs">
 	    <DependentUpon>RegistrarProductosPage.xaml</DependentUpon>
 	  </Compile>
@@ -83,7 +89,16 @@
 	  <MauiXaml Update="CrearPedidosPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="ActualizarPedidosPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="AlertasStockPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="RegistrarProductosPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="ReporteVentasPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

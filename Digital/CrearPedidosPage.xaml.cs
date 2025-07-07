@@ -5,7 +5,6 @@ using Microsoft.Maui.Controls;
 
 namespace Digital
 {
-    // Clase para representar cada línea en el carrito
     public class CartItem
     {
         public string ProductoNombre { get; set; } = string.Empty;
@@ -14,21 +13,17 @@ namespace Digital
     }
 
     public partial class CrearPedidosPage : ContentPage
+
     {
-        // Colección enlazada al CollectionView de carrito
+        private List<Product> carrito = new();
+
         public ObservableCollection<CartItem> CartItems { get; set; }
-
-        // Inventario agrupado (suma de stock por artículo)
         private ObservableCollection<Product> InventarioAgrupado { get; set; }
-
-        // 3) NUEVO: lista de pedidos ya enviados / completados
-        public ObservableCollection<Order> CompletedOrders { get; set; }
 
         public CrearPedidosPage()
         {
-            InitializeComponent(); // MUY importante: llama siempre a InitializeComponent al inicio
+            InitializeComponent();
 
-            // 1) Agrupar App.SharedProductos por Nombre, Descripción y Precio
             var agrupados = App.SharedProductos
                 .GroupBy(p => new { p.Nombre, p.Descripcion, p.Precio })
                 .Select(g => new Product
@@ -43,23 +38,18 @@ namespace Digital
 
             InventarioAgrupado = new ObservableCollection<Product>(agrupados);
 
-            // 2) Llenar el Picker con los nombres de cada producto agrupado
             foreach (var prod in InventarioAgrupado)
             {
                 PickerProductos.Items.Add(prod.Nombre);
             }
 
-            // 3) Inicializar la lista de carrito vacía
             CartItems = new ObservableCollection<CartItem>();
-
-            // 4) Asignar BindingContext = this para enlazar CartItems y CompletedOrders
             BindingContext = this;
 
-            // 5) Inicializar campos en estado “vacío”
             EntryPrecioUnitario.Text = string.Empty;
             LabelStockInfo.Text = "Máximo: 0 en stock";
             StepperCantidad.Minimum = 1;
-            StepperCantidad.Maximum = 1;  // Se ajustará cuando el usuario seleccione
+            StepperCantidad.Maximum = 1;
             StepperCantidad.Value = 1;
             LabelCantidad.Text = "0";
             EntryTotalLinea.Text = "$0.00";
@@ -68,15 +58,39 @@ namespace Digital
             LabelResumenTotal.Text = "$0.00";
             EntryCarritoTotal.Text = "$0.00";
         }
+        private void RecargarInventarioAgrupado()
+        {
+            var agrupados = App.SharedProductos
+                .GroupBy(p => new { p.Nombre, p.Descripcion, p.Precio })
+                .Select(g => new Product
+                {
+                    Nombre = g.Key.Nombre,
+                    Descripcion = g.Key.Descripcion,
+                    Precio = g.Key.Precio,
+                    Cantidad = g.Sum(p => p.Cantidad)
+                })
+                .OrderBy(p => p.Nombre)
+                .ToList();
 
-        // ==============================
-        // 1) Cuando cambia el Picker
-        // ==============================
+            InventarioAgrupado.Clear();
+            foreach (var item in agrupados)
+            {
+                InventarioAgrupado.Add(item);
+            }
+
+            // Refrescar el Picker
+            PickerProductos.Items.Clear();
+            foreach (var prod in InventarioAgrupado)
+            {
+                PickerProductos.Items.Add(prod.Nombre);
+            }
+        }
+
+
         private void OnPickerSelectionChanged(object sender, EventArgs e)
         {
             if (PickerProductos.SelectedIndex < 0)
             {
-                // Sin selección → valores por defecto
                 EntryPrecioUnitario.Text = string.Empty;
                 LabelStockInfo.Text = "Máximo: 0 en stock";
                 StepperCantidad.Maximum = 1;
@@ -89,23 +103,16 @@ namespace Digital
                 return;
             }
 
-            // Obtener producto seleccionado
             string nombreSeleccionado = PickerProductos.Items[PickerProductos.SelectedIndex];
             var producto = InventarioAgrupado.First(p => p.Nombre == nombreSeleccionado);
 
-            // Rellenar precio unitario
             EntryPrecioUnitario.Text = producto.Precio.ToString("F2");
-
-            // Mostrar stock
             LabelStockInfo.Text = $"Máximo: {producto.Cantidad} en stock";
-
-            // Ajustar Stepper (mínimo 1, máximo = stock)
             StepperCantidad.Minimum = 1;
             StepperCantidad.Maximum = producto.Cantidad;
             StepperCantidad.Value = 1;
             LabelCantidad.Text = "1";
 
-            // Calcular total línea inicial (cantidad=1)
             decimal totalInicial = producto.Precio * 1;
             EntryTotalLinea.Text = totalInicial.ToString("C");
             LabelResumenArticulo.Text = producto.Nombre;
@@ -113,52 +120,40 @@ namespace Digital
             LabelResumenTotal.Text = totalInicial.ToString("C");
         }
 
-        // =============================================
-        // 2) Cuando cambia el Stepper de cantidad
-        // =============================================
         private void OnStepperValueChanged(object sender, ValueChangedEventArgs e)
         {
-            // Verificar que haya una selección válida
             if (PickerProductos.SelectedIndex < 0)
                 return;
 
-            // Obtener producto y stock
             string nombreSeleccionado = PickerProductos.Items[PickerProductos.SelectedIndex];
             var producto = InventarioAgrupado.First(p => p.Nombre == nombreSeleccionado);
 
-            // Evitar que supere el stock
             int valorDeseado = (int)e.NewValue;
             if (valorDeseado > producto.Cantidad)
             {
-                // Forzar al máximo permitido
                 StepperCantidad.Value = producto.Cantidad;
                 valorDeseado = producto.Cantidad;
             }
 
             LabelCantidad.Text = valorDeseado.ToString();
 
-            // Recalcular total de línea
             decimal totalLinea = producto.Precio * valorDeseado;
             EntryTotalLinea.Text = totalLinea.ToString("C");
             LabelResumenCantidad.Text = valorDeseado.ToString();
             LabelResumenTotal.Text = totalLinea.ToString("C");
         }
 
-        // ================================================
-        // 3) “Agregar al carrito” (varias líneas permitidas)
-        // ================================================
         private async void OnAgregarCarritoClicked(object sender, EventArgs e)
         {
-            // Validar que haya un producto seleccionado
             if (PickerProductos.SelectedIndex < 0)
             {
                 await DisplayAlert("Error", "Seleccione primero un producto.", "OK");
                 return;
             }
 
-            // Obtener datos de la línea actual
             string nombreSeleccionado = PickerProductos.Items[PickerProductos.SelectedIndex];
-            var producto = InventarioAgrupado.First(p => p.Nombre == nombreSeleccionado);
+            var producto = App.SharedProductos.First(p => p.Nombre == nombreSeleccionado);
+
 
             int cantidad = (int)StepperCantidad.Value;
             if (cantidad <= 0)
@@ -173,24 +168,28 @@ namespace Digital
                 return;
             }
 
-            decimal subtotal = producto.Precio * cantidad;
-
-            // Crear CartItem y agregarlo
-            var nuevaLinea = new CartItem
+            // 🟨 BUSCAR si ya está en el carrito
+            var existente = CartItems.FirstOrDefault(c => c.ProductoNombre == producto.Nombre);
+            if (existente != null)
             {
-                ProductoNombre = producto.Nombre,
-                Cantidad = cantidad,
-                Subtotal = subtotal
-            };
-            CartItems.Add(nuevaLinea);
+                existente.Cantidad += cantidad;
+                existente.Subtotal += producto.Precio * cantidad;
+            }
+            else
+            {
+                CartItems.Add(new CartItem
+                {
+                    ProductoNombre = producto.Nombre,
+                    Cantidad = cantidad,
+                    Subtotal = producto.Precio * cantidad
+                });
+            }
 
-            // Actualizar el total general del carrito
             ActualizarTotalCarrito();
 
-            // Confirmación
             await DisplayAlert("Carrito", $"{producto.Nombre} x{cantidad} agregado al carrito.", "OK");
 
-            // Resetear selección para otra línea
+            // Limpiar selección
             PickerProductos.SelectedIndex = -1;
             EntryPrecioUnitario.Text = string.Empty;
             LabelStockInfo.Text = "Máximo: 0 en stock";
@@ -203,18 +202,13 @@ namespace Digital
             LabelResumenTotal.Text = "$0.00";
         }
 
-        // ================================================
-        // 4) Método auxiliar para recalcular el total
-        // ================================================
+
         private void ActualizarTotalCarrito()
         {
             decimal suma = CartItems.Sum(item => item.Subtotal);
             EntryCarritoTotal.Text = suma.ToString("C");
         }
 
-        // ================================================
-        // 5) “Enviar el pedido” (vaciar carrito y confirmar)
-        // ================================================
         private async void OnEnviarPedidoClicked(object sender, EventArgs e)
         {
             if (CartItems.Count == 0)
@@ -223,31 +217,49 @@ namespace Digital
                 return;
             }
 
-            // Aquí podrías enviar al backend o guardarlo en BD
-            await DisplayAlert("Pedido", "Pedido enviado con éxito.", "OK");
+            // Crear descripción resumen del pedido
+            string descripcion = string.Join(", ", CartItems.Select(c => $"{c.ProductoNombre} x{c.Cantidad}"));
 
-            // Vaciar carrito y actualizar total
+            // Calcular total
+            decimal total = CartItems.Sum(c => c.Subtotal);
+
+            // Crear un solo pedido consolidado
+            App.SharedPedidos.Add(new Order
+            {
+                Id = App.SharedPedidos.Count + 1001,
+                ProductoNombre = "Pedido personalizado",
+                Descripcion = descripcion,
+                PrecioUnitario = 0, // No aplica para consolidado
+                Cantidad = CartItems.Sum(c => c.Cantidad),
+                TotalLinea = total,
+                Estado = "En preparación",
+                FechaPedido = DateTime.Now,
+                Cliente = "Cliente general"
+            });
+
+            // Actualizar el inventario por cada producto
+            foreach (var item in CartItems)
+            {
+                var producto = App.SharedProductos.FirstOrDefault(p => p.Nombre == item.ProductoNombre);
+                if (producto != null)
+                {
+                    producto.Cantidad -= item.Cantidad;
+                    if (producto.Cantidad < 0)
+                        producto.Cantidad = 0;
+                }
+            }
+
+            await DisplayAlert("Pedido", "Pedido enviado con éxito y stock actualizado. ✅", "OK");
+
+            // Limpiar carrito
             CartItems.Clear();
             EntryCarritoTotal.Text = "$0.00";
         }
 
-        // ================================================
-        // 6) Botón “Regresar al inicio”
-        // ================================================
+
         private async void OnRegresarInicioClicked(object sender, EventArgs e)
         {
             await Navigation.PopAsync();
         }
-        public class CartItem
-        {
-            public string ProductoNombre { get; set; } = string.Empty;
-            public int Cantidad { get; set; }
-            public decimal Subtotal { get; set; }
-        }
-
-        // Aquí podrías agregar más métodos, por ejemplo:
-        //   private void OnEditarPedidoPersonalizadoClicked(object sender, EventArgs e) { … }
-        //   y la propiedad pública ObservableCollection<Order> CompletedOrders { get; set; }
-        //   si es que también estás enlazando la colección “PedidosPersonalizadosCollection” en el XAML.
     }
 }

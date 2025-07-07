@@ -1,0 +1,30 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Digital.ReporteVentasPage"
+             Title="Reporte de Ventas">
+    <ScrollView>
+        <VerticalStackLayout Padding="20">
+
+            <Label Text="📋 Reporte de Ventas"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   TextColor="Black"
+                   Margin="0,0,0,20" />
+            <Label Text="Filtrar por estado:" FontSize="16" />
+            <Picker x:Name="PickerFiltroEstado" SelectedIndexChanged="OnFiltroEstadoChanged" />
+                      
+
+
+            <!-- Totales generales -->
+            <Label x:Name="LabelResumenTotal" FontAttributes="Bold" FontSize="16" TextColor="Black"/>
+            <Label x:Name="LabelCantidadPedidos" FontSize="16"/>
+            <Label x:Name="LabelPromedio" FontSize="16"/>
+
+            <!-- Espacio para gráfico -->
+            <BoxView HeightRequest="1" BackgroundColor="Gray" Margin="0,20"/>
+            <Label Text="📊 Ventas por estado" FontSize="20" FontAttributes="Bold" Margin="0,0,0,10"/>
+            <GraphicsView x:Name="BarChartView" HeightRequest="200"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
